@@ -1,7 +1,7 @@
-import { Apierror } from "../utils/Apierror";
-import { asyncHandler } from "../utils/asyncHandler";
+import { Apierror } from "../utils/Apierror.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken"
-import { User } from "../models/user.model";
+import { User } from "../models/user.model.js";
 
 
 export const verifyJWT = asyncHandler(async(req,res,next)=>{
@@ -15,7 +15,7 @@ export const verifyJWT = asyncHandler(async(req,res,next)=>{
    
          const decodedToken = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
    
-         const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
+         const user = await User.findById(decodedToken?._id).select("-refreshToken -password")
    
          if(!user){
            throw new Apierror(401,"Invalid Token")
