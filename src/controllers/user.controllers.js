@@ -144,12 +144,12 @@ const loginUser = asyncHandler(async (req,res)=>{
     )
 })
 
-const logoutUser = asyncHandler(async(req,res) =>{
+const logoutUser = asyncHandler(async(req,res) =>{      
      await User.findByIdAndUpdate(
         req.user._id,
         {
-          $set:{
-            refreshToken:undefined
+          $unset:{
+            refreshToken:1
           }
         },
         {
@@ -171,6 +171,7 @@ const logoutUser = asyncHandler(async(req,res) =>{
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+  // console.log(incomingRefreshToken);
 
   if (!incomingRefreshToken) {
       throw new Apierror(401, "unauthorized request")
@@ -181,14 +182,16 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
           incomingRefreshToken,
           process.env.REFRESH_TOKEN_SECRET
       )
+      // console.log(decodedToken);
   
       const user = await User.findById(decodedToken?._id)
+      // console.log(user);
   
       if (!user) {
           throw new Apierror(401, "Invalid refresh token")
       }
   
-      if (!incomingRefreshToken !== user?.refreshToken) {
+      if (incomingRefreshToken !== user?.refreshToken) {
           throw new Apierror(401, "Refresh token is expired or used")
           
       }
@@ -320,7 +323,7 @@ const updateUserAvatar = asyncHandler(async(req,res)=>{
 })
 
 const getUserChannelProfile = asyncHandler(async(req,res)=>{
-    const username = req.params
+    const {username} = req.params
     
     if (!username?.trim()) {
       throw new Apierror(400,"username is missing")
