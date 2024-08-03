@@ -18,11 +18,15 @@ const uploadOnCloudinary = async (localFilePath) =>{
         })
         //file has been uploaded successfully 
         // console.log("file is successfully uploaded on clouadinary ",response.url);
-        fs.unlinkSync(localFilePath)
+        if (fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath);
+        }
         return response;
     } catch (error) {
-        fs.unlinkSync(localFilePath) // Remove the locally saved temperory file as the 
-        // upload operation got failed 
+        if (fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath);
+        }
+        // Remove the locally saved temperory file as the upload operation got failed 
         return null;
     }
 }
