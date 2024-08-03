@@ -111,6 +111,27 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: get video by id
+
+    if (!videoId) {
+        throw new Apierror(402,"Video Id is required")
+    }
+    
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+        throw new Apierror(400, "Invalid Video ID format");
+    }
+
+    const video = await Video.findById(videoId)
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            "Video Fetched By Id Successfull",
+            video
+        )
+    )
+
 })
 
 const updateVideo = asyncHandler(async (req, res) => {
